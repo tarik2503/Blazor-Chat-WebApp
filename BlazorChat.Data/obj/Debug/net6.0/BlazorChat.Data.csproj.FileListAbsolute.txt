@@ -1,0 +1,14 @@
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\bin\Debug\net6.0\BlazorChat.Data.deps.json
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\bin\Debug\net6.0\BlazorChat.Data.runtimeconfig.json
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\bin\Debug\net6.0\BlazorChat.Data.dll
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\bin\Debug\net6.0\BlazorChat.Data.pdb
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\obj\Debug\net6.0\BlazorChat.Data.csproj.AssemblyReference.cache
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\obj\Debug\net6.0\BlazorChat.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\obj\Debug\net6.0\BlazorChat.Data.AssemblyInfoInputs.cache
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\obj\Debug\net6.0\BlazorChat.Data.AssemblyInfo.cs
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\obj\Debug\net6.0\BlazorChat.Data.csproj.CoreCompileInputs.cache
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\obj\Debug\net6.0\BlazorChat.Data.dll
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\obj\Debug\net6.0\refint\BlazorChat.Data.dll
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\obj\Debug\net6.0\BlazorChat.Data.pdb
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\obj\Debug\net6.0\BlazorChat.Data.genruntimeconfig.cache
+C:\Users\hp\source\repos\BlazorChat\BlazorChat.Data\obj\Debug\net6.0\ref\BlazorChat.Data.dll

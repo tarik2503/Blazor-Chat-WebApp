@@ -1,0 +1,45 @@
+﻿@page "/register"
+@using System.ComponentModel.DataAnnotations
+@using BlazorChat.Data.ModelDTO;
+@using Microsoft.AspNetCore.SignalR.Client;
+@inject Chat _chat;
+
+<div class="d-flex align-items-center justify-content-center mt-3">
+<div class="container m-4 bg-light shadow p-4  rounded" style="max-width:35%;">
+<EditForm Model="@UserSignupDto" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+                <MudTextField Label="First name" HelperText="Max. 8 characters"
+                @bind-Value="UserSignupDto.FirstName" For="@(() => UserSignupDto.FirstName)" />
+                <MudTextField Label="Last name" HelperText="Max. 8 characters"
+                @bind-Value="UserSignupDto.LastName" For="@(() => UserSignupDto.LastName)" />
+                <MudTextField Label="Email" Class="mt-3"
+                @bind-Value="UserSignupDto.Email" For="@(() => UserSignupDto.Email)" />
+                <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                @bind-Value="UserSignupDto.Password" For="@(() => UserSignupDto.Password)" InputType="InputType.Password" />
+                <MudTextField Label="Confirm Password" HelperText="Repeat the password" Class="mt-3"
+                @bind-Value="UserSignupDto.ConfirmPassword" For="@(() => UserSignupDto.ConfirmPassword)" InputType="InputType.Password" />
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+</EditForm>
+</div>
+</div>
+@code {
+    public UserSignupDto UserSignupDto { get; set; } = new UserSignupDto();
+    private HubConnection hubConnection; 
+    private async Task OnValidSubmit(EditContext context)
+    {
+
+        var result = await _accountManager.SignupUser(UserSignupDto);
+        StateHasChanged();
+        if (result.IsSuccessStatusCode)
+        {
+            var user = await _chatManager.GetUserByEmailAsync(UserSignupDto.Email);
+            hubConnection = new HubConnectionBuilder().WithUrl(_navigationManager.ToAbsoluteUri("http://localhost:7203/signalRHub")).Build();
+            await hubConnection.StartAsync();
+            await hubConnection.SendAsync("GetNewRegisteredUser", user, user.Email);
+
+        }
+
+        _navigationManager.NavigateTo("/login");
+    }
+
+}

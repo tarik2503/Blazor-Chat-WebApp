@@ -1,0 +1,36 @@
+﻿@using BlazorChat.Data;
+@using Blazored.FluentValidation;
+
+<MudDialog>
+    <DialogContent>
+        <EditForm Model="@model" >
+             <FluentValidationValidator />           
+            <MudTextField Label="Group Name" Class="mt-3"
+            @bind-Value="model.Name" For="@(() => model.Name)" />
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="MudBlazor.Color.Primary" OnClick="Submit">Add</MudButton>
+    </DialogActions>
+</MudDialog>
+@code{
+    [Parameter]
+    public Groups model { get; set; }
+       [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+    private void Submit()
+    {
+       
+        var validator = new ValidationGroup();
+        var result = validator.Validate(model);
+        if (result.IsValid)
+        {
+
+            MudDialog.Close(DialogResult.Ok<Groups>(model));
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "SABOuOaD0Hs1q+2lXpe8+ali0gzR4maD8l3GtPY6yfw=",
+  "Source": "BlazorChat.API",
+  "BasePath": "_content/BlazorChat.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

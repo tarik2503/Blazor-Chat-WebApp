@@ -1,0 +1,132 @@
+﻿@page "/chat/{ContactId}"
+@page "/chat"
+@attribute [Authorize]
+<div class="d-md-flex flex-grow-1 flex-row container mb-4">
+    <MudPaper Elevation="25" Class="py-4 flex-grow-1 col-md-6" Style="background-color:#E0F2F1;">
+        <MudToolBar Dense="true">
+            @if (string.IsNullOrEmpty(ContactId))
+            {
+                <MudIcon Icon="@Icons.Material.Outlined.Person" Style="margin-right:10px"></MudIcon>
+                <MudText Typo="Typo.h6">Chat</MudText>
+            }
+            else
+            {
+                <MudIcon Icon="@Icons.Material.Outlined.Person" Style="margin-right:10px"></MudIcon>
+                <MudText Typo="Typo.h6">@ContactName</MudText>
+            }
+        </MudToolBar>
+        <div class="d-flex flex-column px-4" style="max-height:60vh;min-height:60vh; overflow:scroll; background-color:#EDE7F6;" id="chatContainer">
+            @if(messages.Count == 0 && ContactId == null)
+            {
+                <div class="container-message d-flex align-items-center justify-content-center">
+                    <div>
+                        <h5 class="p-5 shadow" style="background-color: lightblue;color:forestgreen">Start your chat by clicking over Contacts!</h5>
+                    </div>
+                </div>
+            }
+            else{
+            @foreach (var message in messages)
+            {
+                if (message.FromUser.Id == CurrentUserId )
+                {
+                    <div class="d-flex flex-row-reverse my-4  ">
+                        <div class="mr-4" style="display: flex; flex-direction: column; text-align:left">
+                            <MudText Typo="Typo.caption" Style="padding:15px;max-width:30rem;background-color:#317773;font-size:17px;color:white;border-radius: 5px;margin-top:5px;">@message.Message</MudText>
+                            <MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@message.CreatedDate.ToString("dd MMM, yyyy hh:mm tt")</MudText>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex flex-row my-4">
+                        <div class="mr-4">
+                            <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@message.FromUser.FirstName.ToUpper().FirstOrDefault()</MudAvatar>
+                        </div>
+                        <div style="display: flex;flex-direction: column; ">
+                            <MudText Typo="Typo.caption" Style=" padding: 15px;max-width:30rem;background-color: #E2D1F9;font-size:17px;color:black;border-radius: 5px;margin-top:5px">@message.Message</MudText>
+                            <MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@message.CreatedDate.ToString("dd MMM, yyyy hh:mm tt") </MudText>
+
+                        </div>
+                    </div>
+                }
+            }
+            }
+        </div>
+        @if (ContactId != null)
+        {
+            <MudPaper Elevation="25" Class="d-flex flex-row px-2 mx-4" Style="">
+
+            <MudTextField T="string" Placeholder="Enter your message..." DisableUnderLine="true" Class="mt-n2 mx-4"
+            @bind-Value="CurrentMessage" For="@(()=> CurrentMessage)" />
+
+            <MudButton OnClick="SubmitAsync" StartIcon="@Icons.Material.Outlined.Send" Color="Color.Secondary" ButtonType="ButtonType.Submit">Send</MudButton>
+
+        </MudPaper>
+        }
+    </MudPaper>
+    <MudPaper Elevation="25" Class="pa-3 ml-6 col-md-6 col-lg-4"  Style="background-color:#E0F2F1;">
+        <div class="d-flex justify-content-evenly text-center align-items-baseline mt-1">  
+            <div class="h_line ">
+                <a class="fw-bold" style="font-size:18px;color:#3B71CA;"><i class="fa-solid fa-address-book mx-1" style="font-size:22px; color:#3B71CA;"></i>Contacts</a>
+            </div>
+            <div>
+            <a href="/groupschat" class="p-3 fw-bold" style="font-size:18px;"><i class="fa-solid fa-user-group mx-1" style="font-size:21px;"></i>Groups</a>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column px-4" style="max-height:70vh;min-height:70vh; background-color:#EDE7F6;overflow:scroll;">
+            <MudList Clickable="true">
+
+                @foreach (var user in ChatUsers)
+                {
+                   
+                        <MudListItem Class="pa-0 px-2" OnClick="@(() => LoadUserChat(user.Id))">
+                            <div class="d-flex flex-row mt-n1 mb-n1">
+                                <div class="mr-4">
+                                    <MudBadge Class="my-2">
+                                        @if (user.Id == ContactId)
+                                        {
+                                            @if (user.Status)
+                                            {
+                                                <MudBadge Color="Color.Success" Overlap="true" Bordered="true">
+                                                    <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">
+                                                        @user.FirstName.ToUpper().FirstOrDefault()
+                                                    </MudAvatar>
+                                                </MudBadge>
+                                            }
+                                            else
+                                            {
+                                                <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">
+                                                    @user.FirstName.ToUpper().FirstOrDefault()
+                                                </MudAvatar>
+                                            }
+                                        }
+
+                                        else
+                                        {
+                                            @if (user.Status)
+                                            {
+                                                <MudBadge Color="Color.Success" Overlap="true" Bordered="true">
+                                                    <MudAvatar Color="Color.Dark" Style="height:50px; width:50px;">@user.FirstName.ToUpper().FirstOrDefault()</MudAvatar>
+                                                </MudBadge>
+                                            }
+                                            else
+                                            {
+                                                <MudAvatar Color="Color.Dark" Style="height:50px; width:50px;">@user.FirstName.ToUpper().FirstOrDefault()</MudAvatar>
+                                            }
+                                    }
+                                </MudBadge>
+                            </div>
+                            <div>
+                                <MudText Typo="Typo.body2" Class="mt-3 mb-n2">@user.FirstName</MudText>
+
+                            </div>
+                        </div>
+                    </MudListItem>
+                    
+                }
+            </MudList>
+        </div>
+
+    </MudPaper>
+</div>

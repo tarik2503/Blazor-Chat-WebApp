@@ -1,0 +1,59 @@
+﻿@using BlazorChat.Client.Authentication;
+@using Microsoft.AspNetCore.Authentication;
+@using Microsoft.AspNetCore.Authentication.Cookies;
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Web;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.SignalR.Client;
+@inject NavigationManager Navigation
+
+<AuthorizeView>
+    <Authorized>
+        <div class="pa-4 d-flex flex-row justify-center my-4 mud-text-align-center">
+           
+              
+            <MudAvatar Color="Color.Secondary" Style="height:40px; width:40px;">
+                @context.User.Claims.Where(a => a.Type == "name").Select(a => a.Value).FirstOrDefault().ToUpper().FirstOrDefault()
+
+            </MudAvatar>
+                
+               
+            <MudText Typo="Typo.body2" Class="mt-3 mb-n2 mr-3 ml-1"> @context.User.Claims.Where(a => a.Type == "name").Select(a => a.Value).FirstOrDefault()</MudText>
+            
+        
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="BeginSignOut">Log Out</MudButton>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="pa-4 justify-center my-4 mud-text-align-center">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Link="/register">Register</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Link="/login">Log in</MudButton>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+     public HubConnection hubConnection { get; set; }
+
+    private async Task BeginSignOut()
+    {
+        var Token = await session.GetToken();
+
+        if (hubConnection == null)
+        {
+            hubConnection = await _hubConnection.StartConnection(Token);
+        }
+
+        if (hubConnection.State == HubConnectionState.Disconnected)
+        {
+            await hubConnection.StartAsync();
+        }
+
+        await hubConnection.SendAsync("UserLogout");
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+
+
+        _navigationManager.NavigateTo("/", true);
+    }
+}

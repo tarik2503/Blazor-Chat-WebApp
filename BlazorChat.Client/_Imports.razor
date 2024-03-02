@@ -1,0 +1,33 @@
+﻿@using System.Net.Http
+@using BlazorChat.Client.HubConnectionStart;
+@using BlazorChat.Client.Services;
+@using Microsoft.AspNetCore.Authentication;
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop
+@using BlazorChat.Client
+@using BlazorChat.Client.Shared
+@using BlazorChat.Client.Services
+@using MudBlazor
+@using FluentValidation.Validators
+
+@inject NavigationManager _navigationManager
+@inject ISnackbar _snackBar
+@inject IJSRuntime _jsRuntime
+@inject AuthenticationStateProvider authenticationStateProvider;
+@inject IAuthenticationService authenticationService;
+@inject IGroupChatManager _groupchatManager
+@inject IChatManager _chatManager
+@inject IAccountManager _accountManager
+
+@inject Session session
+@inject HubConnectionService _hubConnection;
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject IDialogService dialogService
+
+

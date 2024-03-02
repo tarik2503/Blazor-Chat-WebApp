@@ -1,0 +1,63 @@
+﻿@page "/login"
+@using System.ComponentModel.DataAnnotations
+@using BlazorChat.Client.Authentication;
+@using BlazorChat.Data.ModelDTO;
+@using Microsoft.AspNetCore.Authentication;
+@using Microsoft.AspNetCore.Authentication.Cookies;
+@using System.Security.Claims;
+@using System.IdentityModel.Tokens.Jwt;
+@using System.Net.Http.Headers;
+
+
+
+<div class="d-flex align-items-center justify-content-center mt-3">
+<div class="container m-4 bg-light shadow p-4  rounded" style="max-width:35%;">
+
+    <EditForm Model="@UserLoginDto" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+
+        <MudTextField Label="Email" Class="mt-4"
+        @bind-Value="UserLoginDto.Email" For="@(() => UserLoginDto.Email)" />
+        <MudTextField Label="Password"  Class="mt-3"
+        @bind-Value="UserLoginDto.Password" For="@(() => UserLoginDto.Password)" InputType="InputType.Password" />
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto mt-4 mb-3">Login</MudButton>
+
+    </EditForm>
+</div>
+</div>
+
+@code {
+    public UserLoginDto UserLoginDto { get; set; } = new UserLoginDto();
+    private readonly HttpClient _httpClient = new HttpClient();
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+
+        var result = await _accountManager.LoginUser(UserLoginDto);
+        var Token = await result.Content.ReadAsStringAsync();
+
+
+        if (result.IsSuccessStatusCode)
+        {
+            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(Token);
+            await ProtectedSessionStore.SetAsync("UserToken", Token);
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(new UserSession
+                {
+                    Name = jwt.Claims.Where(a => a.Type == "name").Select(a => a.Value).FirstOrDefault(),
+                    Role = jwt.Claims.Where(a => a.Type == "Role").Select(a => a.Value).FirstOrDefault(),
+                    UserIdentifier = jwt.Claims.Where(a => a.Type == "id").Select(a => a.Value).FirstOrDefault(),
+                    UserEmail = jwt.Claims.Where(a => a.Type == "email").Select(a => a.Value).FirstOrDefault()
+
+                });
+            
+
+
+            _navigationManager.NavigateTo("/chat", true);
+        }
+
+    }
+
+
+}
+

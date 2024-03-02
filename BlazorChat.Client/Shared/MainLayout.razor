@@ -1,0 +1,104 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client;
+@using System.Security.Claims;
+@inherits LayoutComponentBase
+
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudLayout>
+    <MudAppBar Elevation="0" >
+        <MudToolBar DisableGutters="true">
+            <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" OnClick="@((e) => DrawerToggle())" Class="ml-3" />
+        </MudToolBar>
+        <MudText Typo="Typo.h6" Class="ml-4">Blazor Chat</MudText>
+        <MudSpacer />
+        <LoginDisplay />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+            <CascadingValue Value="hubConnection">
+                @if (_isInitComplete)
+                {
+                    @Body
+                }
+
+            </CascadingValue>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    bool _drawerOpen = false;
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+    private bool _isInitComplete = false;
+
+    // Notification
+    private HubConnection hubConnection;
+    public bool IsConnected => hubConnection.State == HubConnectionState.Connected;
+    protected override async Task OnInitializedAsync()
+    {
+        var Token = await session.GetToken();
+        var state = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = state.User;
+        if (user.Identity.IsAuthenticated)
+        {
+            if (hubConnection == null)
+            {
+                hubConnection = await _hubConnection.StartConnection(Token);
+            }
+
+            var CurrentUserId = user.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).Select(a => a.Value).FirstOrDefault();
+            hubConnection.On<string, string, string>("ReceiveChatNotification", (message, receiverUserId, senderUserId) =>
+            {
+                if (CurrentUserId == receiverUserId)
+                {
+                    _snackBar.Add(message, Severity.Info, config =>
+                    {
+                        config.VisibleStateDuration = 10000;
+                        config.HideTransitionDuration = 500;
+                        config.ShowTransitionDuration = 500;
+                        config.Action = "Chat?";
+                        config.ActionColor = Color.Info;
+                        config.Onclick = snackbar =>
+                        {
+                            _navigationManager.NavigateTo($"chat/{senderUserId}");
+                            return Task.CompletedTask;
+                        };
+                    });
+                }
+
+            });
+            hubConnection.On<string, string, string>("ReceiveGroupChatNotification", (message, groupId, senderUserId) =>
+           {
+               if (CurrentUserId != senderUserId)
+               {
+                   _snackBar.Add(message, Severity.Info, config =>
+               {
+                   config.VisibleStateDuration = 10000;
+                   config.HideTransitionDuration = 500;
+                   config.ShowTransitionDuration = 500;
+                   config.Action = "Chat?";
+                   config.ActionColor = Color.Info;
+                   config.Onclick = snackbar =>
+                   {
+                       _navigationManager.NavigateTo($"groupschat/{groupId}");
+                       return Task.CompletedTask;
+                   };
+               });
+               }
+
+           });
+
+        }
+        _isInitComplete = true;
+    }
+
+
+}
